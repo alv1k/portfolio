@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio Analytics Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: #111726;
+      --card-border: #1e293b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --primary: #38bdf8;
+      --primary-rgb: 56, 189, 248;
+      --accent: #6366f1;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 24px;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 28px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--card-border);
+    }
+    .header h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .header .badge {
+      font-size: 0.75rem;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--primary);
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 600;
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .btn {
+      background: #1e293b;
+      color: var(--text);
+      border: 1px solid #334155;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .btn:hover {
+      background: #334155;
+      border-color: #475569;
+    }
+    .btn-primary {
+      background: #0284c7;
+      border-color: #0369a1;
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: #0369a1;
+    }
+    .auto-refresh-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    /* Stat Cards Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card .label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+    .stat-card .value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+    .stat-card .sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Charts / Insights Grid */
+    .insights-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+    .insight-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+    .insight-card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Progress & Bar styling */
+    .bar-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .bar-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .bar-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+    }
+    .bar-track {
+      height: 8px;
+      background: #1e293b;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #38bdf8, #6366f1);
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
+
+    /* Tabs Navigation */
+    .tabs-nav {
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid var(--card-border);
+      margin-bottom: 16px;
+    }
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 10px 16px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    /* Filters Bar */
+    .filters-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .search-input, .select-input {
+      background: #111726;
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      outline: none;
+    }
+    .search-input:focus, .select-input:focus {
+      border-color: var(--primary);
+    }
+    .search-input { min-width: 260px; }
+
+    /* Tables */
+    .table-container {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      text-align: left;
+    }
+    th {
+      background: #0f1623;
+      color: var(--text-muted);
+      font-weight: 600;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--card-border);
+      white-space: nowrap;
+    }
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #1a2234;
+      color: var(--text);
+      white-space: nowrap;
+    }
+    tr:last-child td { border-bottom: none; }
+    tbody tr {
+      transition: background 0.15s;
+    }
+    tbody tr:hover {
+      background: #161e31;
+    }
+    .clickable-row {
+      cursor: pointer;
+    }
+
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+    }
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .pill-mobile { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+    .pill-desktop { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
+    .pill-tablet { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
+
+    .scroll-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+    }
+    .scroll-mini-bar {
+      width: 48px;
+      height: 6px;
+      background: #1e293b;
+      border-radius: 3px;
+      overflow: hidden;
+      display: inline-block;
+    }
+    .scroll-mini-fill {
+      height: 100%;
+      background: #10b981;
+      border-radius: 3px;
+    }
+
+    /* Modal / Session Inspector */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 800px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-title { font-size: 1.1rem; font-weight: 700; }
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.4rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+      padding-left: 24px;
+      border-left: 2px solid #1e293b;
+      margin-top: 12px;
+    }
+    .timeline-item {
+      position: relative;
+    }
+    .timeline-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--primary);
+      position: absolute;
+      left: -30px;
+      top: 6px;
+    }
+    .timeline-time {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+    .timeline-content {
+      background: #0f1623;
+      border: 1px solid var(--card-border);
+      padding: 10px 14px;
+      border-radius: 8px;
+    }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 16px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .page-controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    @media (max-width: 768px) {
+      body { padding: 14px; }
+      .header h1 { font-size: 1.3rem; }
+      .insights-grid { grid-template-columns: 1fr; }
+      .search-input { min-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div>
+        <h1>
+          Portfolio Analytics
+          <span class="badge">Live</span>
+        </h1>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 4px;">
+          https://portfolio.tiinservice.online &bull; База данных <span class="mono">portfolio_db</span>
+        </p>
+      </div>
+      <div class="header-actions">
+        <label class="auto-refresh-label">
+          <input type="checkbox" id="autoRefreshToggle" checked> Авто-обновление (10с)
+        </label>
+        <button class="btn" id="refreshBtn" onclick="loadAllData()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+          Обновить
+        </button>
+        <button class="btn btn-primary" onclick="exportData()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          Экспорт CSV
+        </button>
+      </div>
+    </header>
+
+    <!-- Stat Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="label">Всего заходов</div>
+        <div class="value" id="statVisits">-</div>
+        <div class="sub" id="statUnique">- уникальных</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Всего кликов</div>
+        <div class="value" id="statClicks" style="color: var(--primary);">-</div>
+        <div class="sub" id="statClicksPerVisit">- на визит</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Средняя глубина скролла</div>
+        <div class="value" id="statAvgScroll" style="color: var(--success);">-</div>
+        <div class="sub" id="statMaxScroll">Макс: -</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Среднее время на сайте</div>
+        <div class="value" id="statAvgDuration">-</div>
+        <div class="sub">секунд на странице</div>
+      </div>
+    </div>
+
+    <!-- Insights Grid -->
+    <div class="insights-grid">
+      <!-- Scroll Depth Breakdown -->
+      <div class="insight-card">
+        <h3>
+          Глубина скролла посетителей
+          <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">До какого блока дошли</span>
+        </h3>
+        <div class="bar-list" id="scrollBarsList">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Top Clicks & Elements -->
+      <div class="insight-card">
+        <h3>
+          Топ нажатых кнопок и ссылок
+          <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">Популярные действия</span>
+        </h3>
+        <div class="bar-list" id="topClicksList">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Devices & Referrers -->
+      <div class="insight-card">
+        <h3>
+          Устройства и Источники
+          <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">Трафик</span>
+        </h3>
+        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 160px;">
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; font-weight: 600;">Устройства</div>
+            <div class="bar-list" id="devicesList"></div>
+          </div>
+          <div style="flex: 1.2; min-width: 180px;">
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; font-weight: 600;">Источники (Рефереры)</div>
+            <div class="bar-list" id="referrersList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs Header -->
+    <div class="tabs-nav">
+      <button class="tab-btn active" id="tabVisitsBtn" onclick="switchTab('visits')">Заходы на страницу (Visits)</button>
+      <button class="tab-btn" id="tabClicksBtn" onclick="switchTab('clicks')">Журнал кликов (Clicks)</button>
+    </div>
+
+    <!-- Visits Tab Content -->
+    <div id="visitsSection">
+      <div class="filters-bar">
+        <div class="filter-group">
+          <input type="text" class="search-input" id="visitsSearch" placeholder="Поиск по IP, Session, Рефереру..." oninput="debounceVisitsSearch()">
+          <select class="select-input" id="deviceFilter" onchange="loadVisits()">
+            <option value="all">Все устройства</option>
+            <option value="desktop">Desktop</option>
+            <option value="mobile">Mobile</option>
+            <option value="tablet">Tablet</option>
+          </select>
+        </div>
+        <div style="font-size: 0.85rem; color: var(--text-muted);" id="visitsCountLabel"></div>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Время</th>
+              <th>IP / Устройство</th>
+              <th>Скролл (%)</th>
+              <th>Время</th>
+              <th>Кликов</th>
+              <th>Реферер</th>
+              <th>Сессия / Посетитель</th>
+            </tr>
+          </thead>
+          <tbody id="visitsTableBody">
+            <tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 24px;">Загрузка данных...</td></tr>
+          </tbody>
+        </table>
+        <div class="pagination">
+          <span id="visitsPaginationInfo">Страница 1</span>
+          <div class="page-controls">
+            <button class="btn" id="visitsPrevBtn" onclick="prevVisitsPage()">Назад</button>
+            <button class="btn" id="visitsNextBtn" onclick="nextVisitsPage()">Вперед</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Clicks Tab Content -->
+    <div id="clicksSection" style="display: none;">
+      <div class="filters-bar">
+        <div class="filter-group">
+          <input type="text" class="search-input" id="clicksSearch" placeholder="Поиск по тексту кнопки, URL, Session..." oninput="debounceClicksSearch()">
+        </div>
+        <div style="font-size: 0.85rem; color: var(--text-muted);" id="clicksCountLabel"></div>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Время</th>
+              <th>Элемент / Текст</th>
+              <th>Ссылка / Действие</th>
+              <th>Скролл клика</th>
+              <th>Координаты</th>
+              <th>Session ID</th>
+            </tr>
+          </thead>
+          <tbody id="clicksTableBody">
+            <tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 24px;">Загрузка данных...</td></tr>
+          </tbody>
+        </table>
+        <div class="pagination">
+          <span id="clicksPaginationInfo">Страница 1</span>
+          <div class="page-controls">
+            <button class="btn" id="clicksPrevBtn" onclick="prevClicksPage()">Назад</button>
+            <button class="btn" id="clicksNextBtn" onclick="nextClicksPage()">Вперед</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Session Modal Inspector -->
+  <div class="modal-overlay" id="sessionModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Детали сессии <span class="mono" id="modalSessionId" style="font-size: 0.9rem; color: var(--primary);"></span></div>
+        <button class="modal-close" onclick="closeSessionModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <!-- Injected by JS -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let visitsPage = 1;
+    let clicksPage = 1;
+    const limit = 30;
+    let visitsTotal = 0;
+    let clicksTotal = 0;
+    let currentTab = 'visits';
+    let autoRefreshTimer = null;
+
+    // Load initial data
+    document.addEventListener('DOMContentLoaded', () => {
+      loadAllData();
+      setupAutoRefresh();
+    });
+
+    function setupAutoRefresh() {
+      if (autoRefreshTimer) clearInterval(autoRefreshTimer);
+      const isEnabled = document.getElementById('autoRefreshToggle').checked;
+      if (isEnabled) {
+        autoRefreshTimer = setInterval(() => {
+          loadAllData(true);
+        }, 10000);
+      }
+    }
+
+    document.getElementById('autoRefreshToggle').addEventListener('change', setupAutoRefresh);
+
+    function loadAllData(silent = false) {
+      loadSummary();
+      if (currentTab === 'visits') {
+        loadVisits();
+      } else {
+        loadClicks();
+      }
+    }
+
+    async function loadSummary() {
+      try {
+        const res = await fetch('/api/portfolio/admin/summary');
+        if (!res.ok) return;
+        const data = await res.json();
+
+        document.getElementById('statVisits').innerText = (data.total_visits || 0).toLocaleString();
+        document.getElementById('statUnique').innerText = `${(data.unique_visitors || 0).toLocaleString()} уникальных`;
+        document.getElementById('statClicks').innerText = (data.total_clicks || 0).toLocaleString();
+        
+        const clicksPerVisit = data.total_visits ? (data.total_clicks / data.total_visits).toFixed(1) : '0.0';
+        document.getElementById('statClicksPerVisit').innerText = `${clicksPerVisit} в среднем на визит`;
+        
+        document.getElementById('statAvgScroll').innerText = `${data.avg_scroll_percent || 0}%`;
+        document.getElementById('statMaxScroll').innerText = `Пик: ${data.max_scroll_percent || 0}%`;
+        document.getElementById('statAvgDuration').innerText = `${data.avg_duration_seconds || 0}s`;
+
+        // Render scroll depth bars
+        renderScrollBuckets(data.scroll_buckets || {}, data.total_visits || 0);
+
+        // Render top clicks
+        renderTopClicks(data.top_clicks || []);
+
+        // Render devices & referrers
+        renderDevices(data.devices || [], data.total_visits || 0);
+        renderReferrers(data.top_referrers || [], data.total_visits || 0);
+      } catch (err) {
+        console.error('Failed to load summary:', err);
+      }
+    }
+
+    function renderScrollBuckets(buckets, total) {
+      const el = document.getElementById('scrollBarsList');
+      if (!total) {
+        el.innerHTML = '<div style="color: var(--text-muted); font-size: 0.85rem;">Пока нет данных</div>';
+        return;
+      }
+      const items = [
+        { label: '0% - 25% (Первый экран / Hero)', count: buckets.s_0_25 || 0 },
+        { label: '25% - 50% (Обо мне & Проекты)', count: buckets.s_25_50 || 0 },
+        { label: '50% - 75% (Навыки & Проекты)', count: buckets.s_50_75 || 0 },
+        { label: '75% - 100% (Докрутили до контактов / футера)', count: buckets.s_75_100 || 0 },
+      ];
+
+      el.innerHTML = items.map(item => {
+        const pct = Math.round((item.count / total) * 100) || 0;
+        return `
+          <div class="bar-item">
+            <div class="bar-header">
+              <span>${item.label}</span>
+              <span class="mono">${item.count} чел. (${pct}%)</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width: ${pct}%;"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderTopClicks(clicks) {
+      const el = document.getElementById('topClicksList');
+      if (!clicks.length) {
+        el.innerHTML = '<div style="color: var(--text-muted); font-size: 0.85rem;">Кликов пока не зафиксировано</div>';
+        return;
+      }
+      const maxCount = Math.max(...clicks.map(c => c.clicks_count), 1);
+      el.innerHTML = clicks.map(c => {
+        const pct = Math.round((c.clicks_count / maxCount) * 100);
+        const title = escapeHtml(c.title || c.element_tag || 'Клик');
+        return `
+          <div class="bar-item">
+            <div class="bar-header">
+              <span><strong>${title}</strong> ${c.target_url ? `<span class="mono" style="color: var(--text-muted); font-size: 0.75rem;">(${escapeHtml(c.target_url)})</span>` : ''}</span>
+              <span class="mono" style="color: var(--primary);">${c.clicks_count}</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width: ${pct}%; background: #38bdf8;"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderDevices(devices, total) {
+      const el = document.getElementById('devicesList');
+      if (!devices.length) {
+        el.innerHTML = '<div style="color: var(--text-muted); font-size: 0.8rem;">Нет данных</div>';
+        return;
+      }
+      el.innerHTML = devices.map(d => {
+        const pct = total ? Math.round((d.count / total) * 100) : 0;
+        return `
+          <div class="bar-item">
+            <div class="bar-header" style="font-size: 0.8rem;">
+              <span>${d.device.toUpperCase()}</span>
+              <span class="mono">${d.count} (${pct}%)</span>
+            </div>
+            <div class="bar-track" style="height: 6px;">
+              <div class="bar-fill" style="width: ${pct}%;"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderReferrers(referrers, total) {
+      const el = document.getElementById('referrersList');
+      if (!referrers.length) {
+        el.innerHTML = '<div style="color: var(--text-muted); font-size: 0.8rem;">Нет данных</div>';
+        return;
+      }
+      el.innerHTML = referrers.map(r => {
+        const pct = total ? Math.round((r.count / total) * 100) : 0;
+        return `
+          <div class="bar-item">
+            <div class="bar-header" style="font-size: 0.8rem;">
+              <span style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(r.referrer_source)}</span>
+              <span class="mono">${r.count}</span>
+            </div>
+            <div class="bar-track" style="height: 6px;">
+              <div class="bar-fill" style="width: ${pct}%; background: #10b981;"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // --- Visits Table ---
+    let visitsSearchTimeout = null;
+    function debounceVisitsSearch() {
+      clearTimeout(visitsSearchTimeout);
+      visitsSearchTimeout = setTimeout(() => {
+        visitsPage = 1;
+        loadVisits();
+      }, 300);
+    }
+
+    async function loadVisits() {
+      const search = document.getElementById('visitsSearch').value.trim();
+      const device = document.getElementById('deviceFilter').value;
+      const params = new URLSearchParams({
+        page: visitsPage,
+        limit: limit,
+        search: search,
+        device: device,
+      });
+
+      try {
+        const res = await fetch(`/api/portfolio/admin/visits?${params}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        visitsTotal = data.total || 0;
+
+        document.getElementById('visitsCountLabel').innerText = `Найдено: ${visitsTotal}`;
+        document.getElementById('visitsPaginationInfo').innerText = `Страница ${visitsPage} из ${Math.ceil(visitsTotal / limit) || 1}`;
+        document.getElementById('visitsPrevBtn').disabled = visitsPage <= 1;
+        document.getElementById('visitsNextBtn').disabled = visitsPage >= Math.ceil(visitsTotal / limit);
+
+        const tbody = document.getElementById('visitsTableBody');
+        if (!data.items || !data.items.length) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 24px;">Записей не найдено</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = data.items.map(row => {
+          const dev = (row.device_type || 'desktop').toLowerCase();
+          const devClass = dev === 'mobile' ? 'pill-mobile' : (dev === 'tablet' ? 'pill-tablet' : 'pill-desktop');
+          const scrollPct = row.max_scroll_percent || 0;
+          return `
+            <tr class="clickable-row" onclick="inspectSession('${escapeHtml(row.session_id)}')">
+              <td class="mono" style="color: var(--text-muted);">${row.created_at || '-'}</td>
+              <td>
+                <span class="pill ${devClass}">${row.device_type || 'desktop'}</span>
+                <span class="mono" style="font-size: 0.8rem; margin-left: 6px;">${row.ip_address || '-'}</span>
+              </td>
+              <td>
+                <div class="scroll-badge">
+                  <div class="scroll-mini-bar">
+                    <div class="scroll-mini-fill" style="width: ${scrollPct}%;"></div>
+                  </div>
+                  <span>${scrollPct}%</span>
+                </div>
+              </td>
+              <td class="mono">${row.duration_seconds || 0}s</td>
+              <td>
+                <span class="pill" style="background: rgba(56, 189, 248, 0.1); color: var(--primary); font-weight: 700;">
+                  ${row.clicks_count || 0} кликов
+                </span>
+              </td>
+              <td style="max-width: 220px; overflow: hidden; text-overflow: ellipsis;" title="${escapeHtml(row.referrer || 'Direct')}">
+                ${escapeHtml(row.referrer || 'Прямой заход')}
+              </td>
+              <td>
+                <span class="mono" style="font-size: 0.75rem; color: var(--text-muted);">${escapeHtml(row.session_id.substring(0, 14))}...</span>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error('Failed to load visits:', err);
+      }
+    }
+
+    function prevVisitsPage() {
+      if (visitsPage > 1) { visitsPage--; loadVisits(); }
+    }
+    function nextVisitsPage() {
+      if (visitsPage < Math.ceil(visitsTotal / limit)) { visitsPage++; loadVisits(); }
+    }
+
+    // --- Clicks Table ---
+    let clicksSearchTimeout = null;
+    function debounceClicksSearch() {
+      clearTimeout(clicksSearchTimeout);
+      clicksSearchTimeout = setTimeout(() => {
+        clicksPage = 1;
+        loadClicks();
+      }, 300);
+    }
+
+    async function loadClicks() {
+      const search = document.getElementById('clicksSearch').value.trim();
+      const params = new URLSearchParams({
+        page: clicksPage,
+        limit: limit,
+        search: search,
+      });
+
+      try {
+        const res = await fetch(`/api/portfolio/admin/clicks?${params}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        clicksTotal = data.total || 0;
+
+        document.getElementById('clicksCountLabel').innerText = `Найдено: ${clicksTotal}`;
+        document.getElementById('clicksPaginationInfo').innerText = `Страница ${clicksPage} из ${Math.ceil(clicksTotal / limit) || 1}`;
+        document.getElementById('clicksPrevBtn').disabled = clicksPage <= 1;
+        document.getElementById('clicksNextBtn').disabled = clicksPage >= Math.ceil(clicksTotal / limit);
+
+        const tbody = document.getElementById('clicksTableBody');
+        if (!data.items || !data.items.length) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 24px;">Записей не найдено</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = data.items.map(row => {
+          return `
+            <tr>
+              <td class="mono" style="color: var(--text-muted);">${row.created_at || '-'}</td>
+              <td>
+                <span class="pill" style="background: #1e293b; color: var(--text);">${escapeHtml(row.element_tag || 'tag')}</span>
+                <strong>${escapeHtml(row.element_text || '-')}</strong>
+              </td>
+              <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;" class="mono" style="color: var(--primary);">
+                ${escapeHtml(row.target_url || '-')}
+              </td>
+              <td>
+                <span class="mono" style="color: var(--success); font-weight: 600;">${row.scroll_depth_percent || 0}%</span>
+              </td>
+              <td class="mono" style="color: var(--text-muted); font-size: 0.75rem;">
+                X: ${row.x_coord || 0}, Y: ${row.y_coord || 0}
+              </td>
+              <td>
+                <a href="javascript:void(0)" onclick="inspectSession('${escapeHtml(row.session_id)}')" class="mono" style="color: var(--primary); font-size: 0.75rem; text-decoration: underline;">
+                  ${escapeHtml(row.session_id.substring(0, 14))}...
+                </a>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error('Failed to load clicks:', err);
+      }
+    }
+
+    function prevClicksPage() {
+      if (clicksPage > 1) { clicksPage--; loadClicks(); }
+    }
+    function nextClicksPage() {
+      if (clicksPage < Math.ceil(clicksTotal / limit)) { clicksPage++; loadClicks(); }
+    }
+
+    // --- Session Modal ---
+    async function inspectSession(sessionId) {
+      document.getElementById('modalSessionId').innerText = sessionId;
+      const modal = document.getElementById('sessionModal');
+      const body = document.getElementById('modalBody');
+      body.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 30px;">Загрузка таймлайна сессии...</div>';
+      modal.classList.add('active');
+
+      try {
+        const res = await fetch(`/api/portfolio/admin/session/${sessionId}`);
+        if (!res.ok) throw new Error('Failed');
+        const data = await res.json();
+        const v = data.visit || {};
+        const clicks = data.clicks || [];
+
+        body.innerHTML = `
+          <div style="background: #0f1623; border: 1px solid var(--card-border); border-radius: 8px; padding: 14px; margin-bottom: 20px; font-size: 0.85rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+            <div><span style="color: var(--text-muted);">IP:</span> <span class="mono">${v.ip_address || '-'}</span></div>
+            <div><span style="color: var(--text-muted);">Устройство:</span> <strong>${v.device_type || '-'}</strong> (${v.screen_width}x${v.screen_height})</div>
+            <div><span style="color: var(--text-muted);">Макс. скролл:</span> <strong style="color: var(--success);">${v.max_scroll_percent || 0}%</strong> (${v.max_scroll_px || 0}px)</div>
+            <div><span style="color: var(--text-muted);">Длительность:</span> <strong>${v.duration_seconds || 0} сек</strong></div>
+            <div><span style="color: var(--text-muted);">Реферер:</span> ${escapeHtml(v.referrer || 'Direct')}</div>
+            <div><span style="color: var(--text-muted);">Язык:</span> ${v.language || '-'}</div>
+          </div>
+
+          <h4 style="font-size: 0.95rem; font-weight: 600; margin-bottom: 10px;">
+            Хронология действий (${clicks.length} событий)
+          </h4>
+
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="timeline-dot" style="background: var(--success);"></div>
+              <div class="timeline-time">${v.created_at || 'Начало'}</div>
+              <div class="timeline-content">
+                <strong>Вход на страницу</strong> &bull; URL: <span class="mono" style="color: var(--primary);">${escapeHtml(v.page_url || '/')}</span>
+              </div>
+            </div>
+
+            ${clicks.map(c => `
+              <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-time">${c.created_at}</div>
+                <div class="timeline-content">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                    <strong>Клик: &laquo;${escapeHtml(c.element_text || c.element_tag)}&raquo;</strong>
+                    <span class="pill" style="background: rgba(56, 189, 248, 0.15); color: var(--primary);">Скролл ${c.scroll_depth_percent}%</span>
+                  </div>
+                  ${c.target_url ? `<div style="font-size: 0.8rem; color: var(--text-muted); word-break: break-all;">Цель: <span class="mono" style="color: #cbd5e1;">${escapeHtml(c.target_url)}</span></div>` : ''}
+                </div>
+              </div>
+            `).join('')}
+
+            <div class="timeline-item">
+              <div class="timeline-dot" style="background: #94a3b8;"></div>
+              <div class="timeline-time">${v.updated_at || 'Конец сессии'}</div>
+              <div class="timeline-content" style="color: var(--text-muted);">
+                Финальная глубина скролла: <strong>${v.max_scroll_percent}%</strong>, проведено времени: <strong>${v.duration_seconds}с</strong>
+              </div>
+            </div>
+          </div>
+        `;
+      } catch (err) {
+        body.innerHTML = '<div style="color: var(--danger); text-align: center; padding: 20px;">Не удалось загрузить данные сессии</div>';
+      }
+    }
+
+    function closeSessionModal() {
+      document.getElementById('sessionModal').classList.remove('active');
+    }
+
+    // --- Tab Switcher ---
+    function switchTab(tab) {
+      currentTab = tab;
+      document.getElementById('tabVisitsBtn').classList.toggle('active', tab === 'visits');
+      document.getElementById('tabClicksBtn').classList.toggle('active', tab === 'clicks');
+      document.getElementById('visitsSection').style.display = tab === 'visits' ? 'block' : 'none';
+      document.getElementById('clicksSection').style.display = tab === 'clicks' ? 'block' : 'none';
+      if (tab === 'visits') loadVisits();
+      else loadClicks();
+    }
+
+    // --- Export CSV ---
+    async function exportData() {
+      try {
+        const [visitsRes, clicksRes] = await Promise.all([
+          fetch('/api/portfolio/admin/visits?limit=1000'),
+          fetch('/api/portfolio/admin/clicks?limit=1000'),
+        ]);
+        const visits = (await visitsRes.json()).items || [];
+        const clicks = (await clicksRes.json()).items || [];
+
+        let csv = "data:text/csv;charset=utf-8,";
+        csv += "--- VISITS ---\n";
+        csv += "ID,SessionID,VisitorID,IP,Device,ScrollPct,DurationSec,Referrer,CreatedAt\n";
+        visits.forEach(v => {
+          csv += `"${v.id}","${v.session_id}","${v.visitor_id}","${v.ip_address}","${v.device_type}","${v.max_scroll_percent}","${v.duration_seconds}","${(v.referrer||'').replace(/"/g, '""')}","${v.created_at}"\n`;
+        });
+
+        csv += "\n--- CLICKS ---\n";
+        csv += "ID,SessionID,VisitorID,Tag,Text,TargetURL,ScrollPct,CreatedAt\n";
+        clicks.forEach(c => {
+          csv += `"${c.id}","${c.session_id}","${c.visitor_id}","${c.element_tag}","${(c.element_text||'').replace(/"/g, '""')}","${(c.target_url||'').replace(/"/g, '""')}","${c.scroll_depth_percent}","${c.created_at}"\n`;
+        });
+
+        const encodedUri = encodeURI(csv);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `portfolio_analytics_${new Date().toISOString().slice(0, 10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (err) {
+        alert('Ошибка экспорта данных: ' + err.message);
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+  </script>
+</body>
+</html>

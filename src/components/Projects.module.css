@@ -1,0 +1,271 @@
+.projects_list {
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+}
+
+.project {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+
+.project.reverse {
+  direction: rtl;
+}
+
+.project.reverse > * {
+  direction: ltr;
+}
+
+.project_info {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.project_header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.project_dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.project_title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.project_subtitle {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.price_label {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent-2);
+  background: rgba(6, 182, 212, 0.1);
+  padding: 2px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(6, 182, 212, 0.2);
+}
+
+.project_desc {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+.features_title,
+.stack_title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.features_list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.feature_item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.feature_check {
+  color: var(--accent-2);
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.stack_badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.stack_badge {
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: rgba(124, 58, 237, 0.1);
+  color: var(--accent-2);
+  border: 1px solid rgba(124, 58, 237, 0.2);
+}
+
+.demo_btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--btn-color, var(--accent-1));
+  padding: 12px 24px;
+  border: 2px solid var(--btn-color, var(--accent-1));
+  border-radius: 10px;
+  transition: all 0.3s;
+  width: fit-content;
+}
+
+.demo_btn:hover {
+  background: var(--btn-color, var(--accent-1));
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.project_visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mockup_laptop {
+  width: 100%;
+  max-width: 420px;
+}
+
+.laptop_screen {
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: 12px 12px 0 0;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+}
+
+.laptop_base {
+  height: 12px;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 20px 20px;
+  margin: 0 8px;
+}
+
+.mockup_phone {
+  width: 220px;
+  background: var(--bg-card);
+  border: 3px solid var(--border);
+  border-radius: 28px;
+  overflow: hidden;
+  position: relative;
+}
+
+.phone_screen {
+  aspect-ratio: 9 / 19;
+  overflow: hidden;
+}
+
+.phone_notch {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 22px;
+  background: var(--bg-card);
+  border-radius: 0 0 12px 12px;
+  z-index: 2;
+}
+
+.screenshot_img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.mockup_content {
+  width: 100%;
+  height: 100%;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--mockup-color) 8%, var(--bg-card)) 0%,
+    var(--bg-card) 30%
+  );
+}
+
+.mockup_header {
+  display: flex;
+  gap: 6px;
+  padding: 4px 0 8px;
+}
+
+.mockup_dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  opacity: 0.4;
+}
+
+.mockup_body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.mockup_line {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--text-muted);
+  opacity: 0.15;
+}
+
+.mockup_block {
+  height: 32px;
+  border-radius: 6px;
+  background: var(--mockup-color);
+  opacity: 0.15;
+  margin-top: 4px;
+}
+
+@media (max-width: 900px) {
+  .project {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .project.reverse {
+    direction: ltr;
+  }
+
+  .project_visual {
+    order: -1;
+  }
+
+  .mockup_laptop {
+    max-width: 320px;
+  }
+
+  .mockup_phone {
+    width: 180px;
+  }
+}
